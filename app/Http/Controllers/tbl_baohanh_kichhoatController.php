@@ -51,11 +51,13 @@ class tbl_baohanh_kichhoatController extends Controller
 			$sanpham->email=$request->input("email");
 			$mytime = Carbon::now();
 			$sanpham->baohanhtu= strtotime($mytime->format('Y-m-d'));		
-			$baohanh=DB::table('tbl_baohanh_sanpham')->where('serial', $sanpham->serial)->first();
-			if (!$baohanh)
+			$baohanh=DB::table('tbl_baohanh_sanpham')->where('serial', $sanpham->serial)->first();	
+			if (!($baohanh))
 			{
-				throw new Exception("Error!!");
+				throw new Exception("Error!!".$baohanh);
+				
 			}else{
+				
 				$baohanh=DB::table('tbl_baohanh_sanpham')->where('serial', $sanpham->serial)->first()->baohanh;	
 			}			
 			$sanpham->baohanhden=0;
@@ -79,24 +81,24 @@ class tbl_baohanh_kichhoatController extends Controller
 			}
 			$sanpham->baohanhden=$sanpham->baohanhden+ $sanpham->baohanhtu;
 			$sanpham->save();			
-			$success='{
+			$success='[{
 				"code": 200,
 				"status": "success",
 				"content": {
 				"message":'.'"Kích hoạt bảo hành thành công. Sản phẩm được bảo hành '. $baohanh.' tháng từ ngày '. date("d/m/Y", $sanpham->baohanhtu).' đến ngày '.date("d/m/Y", $sanpham->baohanhden)				
-				.'"}'.
+				.'"}]'.
 			'}';
-			return $success;             
+			return json_decode($success);             
 		} catch (Exception $e) {
 			echo "Message: " . $e->getMessage();
-			$error='{
+			$error='[{
 				"code": 9000,
 				"status": "error",
 				"content": {
 				"error_message": "Mã serial sản phẩm không đúng"
 				}
-			}';
-		return $error;
+			}]';
+		return json_decode($error);
 		}
 	}
 
@@ -108,59 +110,52 @@ class tbl_baohanh_kichhoatController extends Controller
      */
     public function show($id)
     {
+		
 		try {
 			//insert
-			$sanpham=new tbl_baohanh_kichhoat;
-			
-			
+			$sanpham=new tbl_baohanh_kichhoat;						
 			$mytime = Carbon::now();
 			$sanpham->baohanhtu= strtotime($mytime->format('Y-m-d'));		
-			$baohanh=DB::table('tbl_baohanh_sanpham')->where('serial', $id)->first();
+			$baohanh=DB::table('tbl_baohanh_kichhoat')->where('serial', $id)->first();
+			//return gettype($baohanh);
 			if (!$baohanh)
 			{
 				throw new Exception("Error!!");
 			}else{
-				$baohanh=DB::table('tbl_baohanh_sanpham')->where('serial', $id)->first()->baohanh;	
-			}			
-			$sanpham->baohanhden=0;
-			$month=Carbon::now()->month;
-			$year=Carbon::now()->year;
-			for($i=1;$i<=$baohanh;$i++){
-				$month++;
-				if($month== 4||$month==6||$month==9||$month==11){
-					$sanpham->baohanhden=$sanpham->baohanhden+ 30*86400;
-				}else if($month== 1||$month==3||$month==5||$month==7||$month==8||$month==10||$month==12){
-					$sanpham->baohanhden=$sanpham->baohanhden+ 31*86400;
-				}else if($month >12){
-					$month=0;
-					$year++;
-					$sanpham->baohanhden=$sanpham->baohanhden+ 31*86400;
-				}else if($month ==2&&$year%100 == 0&&$year%400 == 0){
-					$sanpham->baohanhden=$sanpham->baohanhden+ 29*86400;
-				}else if($month ==2&&($year%100 != 0||$year%400 != 0)){
-					$sanpham->baohanhden=$sanpham->baohanhden+ 28*86400;
-				}				
-			}
-			$sanpham->baohanhden=$sanpham->baohanhden+ $sanpham->baohanhtu;
-			$sanpham->save();			
-			$success='{
+				$baohanhtu=DB::table('tbl_baohanh_kichhoat')->where('serial', $id)->first()->baohanhtu;	
+				$baohanhden=DB::table('tbl_baohanh_kichhoat')->where('serial', $id)->first()->baohanhden;
+				$name=DB::table('tbl_baohanh_kichhoat')->where('serial', $id)->first()->hoten;
+				$phone=DB::table('tbl_baohanh_kichhoat')->where('serial', $id)->first()->dienthoai;
+				$address=DB::table('tbl_baohanh_kichhoat')->where('serial', $id)->first()->diachi;
+				$email=DB::table('tbl_baohanh_kichhoat')->where('serial', $id)->first()->email;
+			}					
+			$date_from=date("d/m/Y", $baohanhtu);
+			$date_to=date("d/m/Y", $baohanhden);
+			$success='[{
 				"code": 200,
 				"status": "success",
 				"content": {
-				"serial":'.$id
-				.'"}'.
-			'}';
-			return $success;             
+				"serial":"'.$id.'",'
+				.'"name":"' .$name.'",'
+				.'"phone":"' .$phone.'",'
+				.'"address":"' .$address.'",'
+				.'"email":"' .$email.'",'
+				.'"date_from":"' .$date_from.'",'
+				.'"date_to":"' .$date_to.'"'
+				
+				.'}'.
+			'}]';
+			return json_decode($success);             
 		} catch (Exception $e) {
 			echo "Message: " . $e->getMessage();
-			$error='{
+			$error='[{
 				"code": 9000,
 				"status": "error",
 				"content": {
 				"error_message": "Mã serial sản phẩm không đúng"
 				}
-			}';
-		return $error;
+			}]';
+		return json_decode($error);
 		}
     }
 

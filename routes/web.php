@@ -16,7 +16,7 @@ use App\Http\Controllers\tbl_baohanh_kichhoatController;
 */
 
 
-Route::resource('user','tbl_baohanh_kichhoatController');
+//Route::resource('user','tbl_baohanh_kichhoatController');
 Route::get( 'SanPham',[tbl_baohanh_kichhoatController::class,'index']);
-Route::get( 'TraCuuBaoHanh',[tbl_baohanh_kichhoatController::class,'show']);
 Route::post( 'KichHoatBaoHanh',[tbl_baohanh_kichhoatController::class,'store']);
+Route::get( 'TraCuuBaoHanh/{id}',['uses' => 'tbl_baohanh_kichhoatController@show','as' => 'TraCuuBaoHanh.route']);

@@ -22,11 +22,11 @@
     </head>
     <body class="antialiased">
 	
-	<form action='{{action("tbl_baohanh_kichhoatController@show") }}' method='GET'>
+	<form action="{{ route('test.route', $id?? '') }}" method='GET'>	
+		<input type="submit"  >
+	</form> 
 
-		<input type="text" name="serial">		
-		<input type="submit" name="_token" >
-	</form>
+    
         <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center sm:pt-0">
             @if (Route::has('login'))
                 <div class="hidden fixed top-0 right-0 px-6 py-4 sm:block">
